@@ -29,19 +29,18 @@ const quizData = [
 ];
 
 async function main() {
-    await generateQuestion();
+    generateQuestion();
     for (let i = 0; i < quizData.length - 1; i++) {
         selectAnswer();
         await submitQuestion();
         await loadNextQuestion();
     }
     selectAnswer();
-    submitQuestion();
+    await submitQuestion();
     loadLastQuestion();
-    displayScore();
 }
 
-async function generateQuestion() {
+function generateQuestion() {
     const mainTag = document.querySelector("main");
     const questionData = quizData[currentQuestion];
     mainTag.innerHTML = '';
@@ -87,7 +86,6 @@ async function checkAnswer() {
 function setResult(result) {
     const selectedAnswer = document.querySelector('.checked');
     if (result) {
-        score++;
         selectedAnswer.classList.add("correct");
     } else {
         selectedAnswer.classList.add("incorrect");
@@ -101,7 +99,6 @@ async function submitQuestion() {
 
     return new Promise((resolve) => {
         submitButton.addEventListener("click", async () => {
-            console.log("sub clicked");
             const selectedAnswer = await checkAnswer();
             setResult(selectedAnswer);
             submitButton.classList.add("next-btn");
@@ -112,19 +109,13 @@ async function submitQuestion() {
 
 async function loadNextQuestion() {
     const nextButton = document.querySelector(".next-btn");
-    console.log(nextButton);
     nextButton.innerHTML = 'Next';
 
     return new Promise((resolve) => {
         nextButton.addEventListener("click", () => {
-            console.log("next clicked");
             if (currentQuestion < quizData.length - 1) {
                 currentQuestion++;
                 generateQuestion();
-            } else {
-                // Handle the case when all questions have been answered.
-                // For example, show the final score or end of quiz message.
-                console.log("Quiz finished!");
             }
             resolve(); // Resolve the promise to indicate completion.
         });
@@ -134,12 +125,19 @@ async function loadNextQuestion() {
 
 // This is for the last question because the next shouldn't display, just submit, then (Show the final result) after that we will see the score.
 function loadLastQuestion() {
-    // Implement the logic for the last question here.
+    const showScoreButton = document.querySelector("button");
+    showScoreButton.innerHTML = "Show Score"
+
+    return new Promise((resolve) => {
+        showScoreButton.addEventListener("click", () => {
+            const scoreText = `<h1>${score / 2} / ${quizData.length}</h1>`;
+            const mainTag = document.querySelector("main");
+            mainTag.innerHTML = "";
+            mainTag.innerHTML += scoreText;
+            resolve();
+        }); 
+    })
 }
 
-// Display the final score.
-function displayScore() {
-    // Implement the logic to display the final score here.
-}
 
 main();
