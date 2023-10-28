@@ -87,6 +87,7 @@ function setResult(result) {
     const selectedAnswer = document.querySelector('.checked');
     if (result) {
         selectedAnswer.classList.add("correct");
+        score++;
     } else {
         selectedAnswer.classList.add("incorrect");
     }
